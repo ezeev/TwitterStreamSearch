@@ -5,6 +5,8 @@ mkdir solr
 echo "Downloading Solr from http://www.eu.apache.org/dist/lucene/solr/5.3.1/solr-5.3.1.tgz"
 curl -O http://www.eu.apache.org/dist/lucene/solr/5.3.1/solr-5.3.1.tgz
 
+
+
 echo "Extracting Solr"
 tar xf solr-5.3.1.tgz
 
