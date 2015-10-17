@@ -1,0 +1,5 @@
+id,ticker_s,streamCategory_s,streamTrack_s,relevantTerms_t,excludeTerms_t
+APPL1,APPL,Example,"@apple,iphone,macbook,iphone6s,iphone7,iphone6,iwatch,aapl,$aapl,apple com",@apple iphone macbook iphone6s iphone7 iphone6 iwatch,
+NFLX,NFLX,Example,"NFLX,Netflix,$NFLX,netflix com",netflix nflx,
+BernieSanders,BernieSanders,Example,"berniesanders com,@sensanders,@berniesanders,bernie sanders",@sensanders berniesanders.com berniesanders bernie sanders,
+SpiritDay,SpiritDay,Example,"#spiritday,spiritday",spiritday #spiritday,

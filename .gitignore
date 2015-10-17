@@ -1,0 +1,6 @@
+solr/
+*.log
+*.pid
+tweets/
+target
+.idea
