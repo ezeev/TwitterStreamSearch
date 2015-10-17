@@ -8,6 +8,8 @@ curl -O http://www.eu.apache.org/dist/lucene/solr/5.3.1/solr-5.3.1.tgz
 echo "Extracting Solr"
 tar xf solr-5.3.1.tgz
 
+
+
 mv solr-5.3.1 solr/
 mv solr-5.3.1.tgz solr/
 
