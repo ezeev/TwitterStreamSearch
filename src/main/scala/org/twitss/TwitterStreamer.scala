@@ -1,17 +1,21 @@
 package org.twitss
 
+import java.net.{InetAddress, Socket}
+
 import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import com.google.gson.Gson
 import org.apache.spark.streaming.twitter._
 import org.apache.spark.sql.SQLContext
-import java.io.FileWriter
+import java.io.{PrintStream, FileWriter}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import scala.io.BufferedSource
 
 object TwitterStreamer {
 
@@ -59,6 +63,7 @@ object TwitterStreamer {
     //we only want the streamTrack_s column
     val twitterTrackDF = tweetStreamsDF.select("streamTrack_s").toDF()
 
+    //this variable will hold an array of track strings for the twitter API
     twitterTrack.clear()
 
     //iterate through the rows to build an array of tracks we want to send to twitter.
@@ -68,10 +73,9 @@ object TwitterStreamer {
       twitterTrack += track
     }
 
-    //create the twitter stream and map it to JSON
+    //create the twitter stream and map it to JSON format
     val stream = TwitterUtils.createStream(ssc, None, twitterTrack).map(gson.toJson(_))
     //val stream = TwitterUtils.createStream(ssc, None).map(gson.toJson(_))
-
 
     val partitionsEachInterval = 2
 
@@ -92,7 +96,7 @@ object TwitterStreamer {
 
 
         //create data structures to hold the counts for each track, and the sum of scores.
-        val tweetScores = mutable.HashMap.empty[String, Double]
+        val tweetScores = mutable.HashMap.empty[String,Double]
         val tweetCounts = mutable.HashMap.empty[String,Int]
 
 
@@ -104,22 +108,26 @@ object TwitterStreamer {
 
 
 
-        try {
-          val fw = new FileWriter("temp.txt", true)
+        //try {
+          lazy val fw = new FileWriter("temp.txt", true)
 
           //the collectTweetMetrics populated hashmaps with counts and sum of scores for all
           //symbols that matched tweets from this batch. Compute the average score for this batch.
           tweetCounts.foreach {
             case (k,v) =>
               val avgScore = tweetScores(k) / tweetCounts(k)
+
+              this.sendMetric("tweetstreamer.count "+v+" source=localhost streamId=\""+k+"\"")
+
               fw.write(
                 "\n" + time.toString + " - Tweets for " + k
+
                   + " - " + v + " - Average Score: " + avgScore.toString
               )
               logger.info(s"$k has $v tweets. Average score: $avgScore")
           }
           fw.close()
-        }
+        //}
 
         //reset
         tweetCounts.clear()
@@ -131,7 +139,6 @@ object TwitterStreamer {
 
           //val fw = new FileWriter("temp.txt", true)
           //fw.write("TWEET:"+ tweetText+"\n")
-
 
           //Send the tweet text to Solr so we can get a relevancy score and see if the tweets match our corpus of tracks we want to track.
           val url = "http://localhost:8983/solr/tweettracks/select?fl=id,score&defType=edismax&wt=csv&qf=relevantTerms_t&q=" + java.net.URLEncoder.encode(tweetText, "utf-8")
@@ -173,5 +180,21 @@ object TwitterStreamer {
     ssc.start()
     ssc.awaitTermination()
   }
+
+
+  def sendMetric(metric : String): Unit = {
+
+    val s = new Socket(InetAddress.getByName("localhost"), 2878)
+    lazy val in = new BufferedSource(s.getInputStream()).getLines()
+    val out = new PrintStream(s.getOutputStream())
+
+    out.println(metric)
+    out.flush()
+    //println("Received: " + in.next())
+
+    s.close()
+    return
+  }
+
 }
 // scalastyle:on println

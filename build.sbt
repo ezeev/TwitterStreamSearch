@@ -12,6 +12,8 @@ libraryDependencies += "org.apache.spark" % "spark-streaming-twitter_2.10" % "1.
 
 libraryDependencies += "org.apache.spark" % "spark-sql_2.10" % "1.5.1"
 
+libraryDependencies += "org.apache.spark" % "spark-graphx_2.10" % "1.5.1"
+
 libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.0.1"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.4"
