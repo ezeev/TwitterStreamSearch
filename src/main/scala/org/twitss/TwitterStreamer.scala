@@ -104,7 +104,7 @@ object TwitterStreamer {
 
         //iterate throgh the tweet text
         tweetsDF2.collect.foreach(collectTweetMetrics)
-        tweetsDF2.write.json("tweets/"+time.milliseconds.toString+".json")
+        //tweetsDF2.write.json("tweets/"+time.milliseconds.toString+".json")
 
 
 
