@@ -117,7 +117,7 @@ object TwitterStreamer {
             case (k,v) =>
               val avgScore = tweetScores(k) / tweetCounts(k)
 
-              this.sendMetric("tweetstreamer.count "+v+" source=localhost streamId=\""+k+"\"")
+              this.sendMetric("tweetstreamer.count "+v+" source=tweetstreamer streamId=\""+k+"\"")
 
               fw.write(
                 "\n" + time.toString + " - Tweets for " + k
